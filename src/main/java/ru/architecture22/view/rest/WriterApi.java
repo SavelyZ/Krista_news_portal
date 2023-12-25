@@ -9,77 +9,48 @@ import java.util.List;
 import java.util.UUID;
 
 import ru.architecture22.IO.AllNewsIO;
-import ru.architecture22.IO.NewsByAuthorIO;
 import ru.architecture22.IO.NewsIO;
+import ru.architecture22.controller.BO.CategoryBO;
+import ru.architecture22.controller.BO.NewsBO;
+import ru.architecture22.controller.CategoryController;
+import ru.architecture22.controller.Facade;
+import ru.architecture22.controller.NewsController;
 
 @Path("/writer/")
 @Produces({MediaType.APPLICATION_JSON})
 public class WriterApi {
-    NewsIO fictionNewsIO = new NewsIO(UUID.randomUUID(), "Мир", "Новость про мир", "Петров");
-    NewsIO fictionNewsIO2 = new NewsIO(UUID.randomUUID(), "Спорт", "Новость про спорт", "Смирнов");
-    AllNewsIO allNewsIO = new AllNewsIO(Arrays.asList(fictionNewsIO, fictionNewsIO2));
+
+    private Facade facade;
+
+    public WriterApi() {
+        NewsController newsController = new NewsController();
+        CategoryController categoryController = new CategoryController();
+        this.facade = new Facade(newsController, categoryController);
+    }
 
     //получить свои новости (по автору)
     @GET
     @Path("/category/news")
     public Response getNewsByAuthor(@QueryParam("author") String author) {
-        NewsByAuthorIO newsByAuthorIO = new NewsByAuthorIO();
-        for (int i = 0; i < allNewsIO.getListNews().size(); i++) {
-            NewsIO news = allNewsIO.getListNews().get(i);
-            if (news.getAuthor().equals(author)) {
-                newsByAuthorIO.getNewsListByAuthorIO().add(allNewsIO.getListNews().get(i));
-            }
-        }
-        if (newsByAuthorIO.getNewsListByAuthorIO().size() > 0) {
-            return Response.ok().entity(newsByAuthorIO).build();
-        }
-        return Response.status(404).build();
+        List<NewsBO> responseBO = facade.getNewsListByAuthor(author);
+        return Response.ok(responseBO).build();
     }
 
     //добавить новость
     @GET
     @Path("category/news/add_news")
-    public Response addNews(@QueryParam("categ") String categ, @QueryParam("title") String title,
+    public Response addNews(@QueryParam("categId") UUID categId, @QueryParam("title") String title,
                             @QueryParam("author") String author, @QueryParam("text") StringBuilder text) {
-        NewsIO newsAdd = new NewsIO(UUID.randomUUID(), categ, title, author, text);
-        List<NewsIO> listAuthorNews = new ArrayList<NewsIO>();
-        for (int i = 0; i < allNewsIO.getListNews().size(); i++) {
-            NewsIO news = allNewsIO.getListNews().get(i);
-            if (news.getAuthor().equals(author)) {
-                listAuthorNews.add(allNewsIO.getListNews().get(i));
-            }
-        }
-        listAuthorNews.add(newsAdd);
-        allNewsIO.getListNews().add(newsAdd);
-        if (allNewsIO.getListNews().size() > 0) {
-            return  Response.ok().entity(allNewsIO).build();
-        }
-        return  Response.status(404).build();
+        CategoryBO categoryBO = facade.findCategoryById(categId);
+        facade.addNews(title, text, categoryBO, null);
+        return Response.ok().build();
     }
 
     //удалить новость
     @GET
     @Path("/category/news/delete/{id_news}")
-    public Response getDeleteNews(@PathParam("id_news") UUID idNews, @QueryParam("author") String author) {
-        List<NewsIO> listAuthorNews = new ArrayList<NewsIO>();
-        for (int i = 0; i < allNewsIO.getListNews().size(); i++) {
-            NewsIO news = allNewsIO.getListNews().get(i);
-            if (news.getId().equals(idNews)) {
-                allNewsIO.getListNews().remove(i);
-            }
-            if (news.getAuthor().equals(author)) {
-                listAuthorNews.add(allNewsIO.getListNews().get(i));
-            }
-        }
-        for (int i = 0; i < listAuthorNews.size(); i++){
-            NewsIO news = listAuthorNews.get(i);
-            if (news.getId().equals(idNews)) {
-                listAuthorNews.remove(i);
-            }
-        }
-        if (allNewsIO.getListNews() != null) {
-            return  Response.ok().entity(allNewsIO).build();
-        }
+    public Response deleteNews(@PathParam("id_news") UUID idNews) {
+        facade.delNews(idNews);
         return  Response.status(404).build();
     }
 }

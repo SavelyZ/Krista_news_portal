@@ -3,10 +3,11 @@ package ru.architecture22.controller;
 import ru.architecture22.controller.BO.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public interface CategoryInter {
-    ArrayList<CategoryBO> getListCategory();
+    List<CategoryBO> getListCategoryConverted();
     UUID addCategory(UUID id, String name);
     CategoryBO findCategoryByNews(NewsBO newsBO);
     CategoryBO findCategoryByName(String name);

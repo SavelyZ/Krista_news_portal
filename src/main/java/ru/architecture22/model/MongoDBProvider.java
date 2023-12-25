@@ -14,7 +14,8 @@ public class MongoDBProvider extends FactoryProvider {
     private static ArrayList<NewsDO> listNewsDO;
     private static ArrayList<CategoryDO> listCategoriesDO;
 
-    public static void make() throws IOException {
+    @Override
+    public void make() throws Exception {
         listCategoriesDO = new ArrayList<>();
         UUID categoryId1 = UUID.randomUUID();
         UUID categoryId2 = UUID.randomUUID();

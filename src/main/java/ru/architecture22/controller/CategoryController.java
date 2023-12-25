@@ -1,14 +1,31 @@
 package ru.architecture22.controller;
 
 import ru.architecture22.DO.CategoryDO;
-import ru.architecture22.controller.BO.*;
+import ru.architecture22.controller.BO.CategoryBO;
+import ru.architecture22.controller.BO.NewsBO;
+import ru.architecture22.model.Factory;
+import ru.architecture22.model.FactoryProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CategoryController implements CategoryInter {
-    public ArrayList<CategoryBO> getListCategory() {
-        return null;
+
+    FactoryProvider factoryProvider;
+
+    public CategoryController() {
+        factoryProvider = Factory.getProvider(Factory.POSTGRE_SQL_CLIENT);
+    }
+    public ArrayList<CategoryDO> getListCategory() {
+        return factoryProvider.getCategoriesList();
+    }
+
+    public List<CategoryBO> getListCategoryConverted() {
+        return factoryProvider.getCategoriesList().stream()
+                .map(this::convertCategDOIntoCategBO)
+                .collect(Collectors.toList());
     }
 
     public CategoryBO convertCategDOIntoCategBO(CategoryDO categDO) {

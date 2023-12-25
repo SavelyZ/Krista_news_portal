@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 public class FactoryTest {
     @Test
-    public void testFactory() throws IOException {
+    public void testFactory() throws Exception {
         MongoDBProvider mongoDBProvider = new MongoDBProvider();
         PostgreSQLProvider postgreSQLProvider = new PostgreSQLProvider();
         mongoDBProvider.make();

@@ -7,6 +7,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 public class Facade {
@@ -18,8 +19,16 @@ public class Facade {
         this.categoryController = categoryController;
     }
 
-    public void getListNews() {
-        this.newsController.getListNews();
+    public List<NewsBO> getListNews() {
+        return newsController.getListNewsConverted();
+    }
+
+    public List<NewsBO> getNewsByCategory(String nameCategory) {
+        return newsController.getNewsByCategory(nameCategory);
+    }
+
+    public List<String> getNewsTitleList() {
+        return newsController.getNewsTitleList();
     }
 
     public NewsBO findNewsById(UUID id) {
@@ -38,8 +47,8 @@ public class Facade {
         this.newsController.delNews(id);
     }
 
-    public void getListCategory() {
-        this.categoryController.getListCategory();
+    public List<CategoryBO> getListCategory() {
+        return categoryController.getListCategoryConverted();
     }
 
     public void addCategory(UUID id, String name) {
@@ -151,16 +160,7 @@ public class Facade {
     }
 
     //список новостей конкретного автора
-    public NewsByAuthorIO getNewsListByAuthorIO(ArrayList<NewsBO> listNewsBO, String author){
-        NewsByAuthorIO newsByAuthorIO = new NewsByAuthorIO();
-        for (int i = 0; i < listNewsBO.size(); i++) {
-            if (listNewsBO.get(i).getAuthor().toUpperCase().equals(author.toUpperCase())){
-                NewsIO buf = new NewsIO();
-                buf.setId(listNewsBO.get(i).getId());
-                buf.setTitle(listNewsBO.get(i).getTitle());
-                newsByAuthorIO.getNewsListByAuthorIO().add(buf);
-            }
-        }
-        return newsByAuthorIO;
+    public List<NewsBO> getNewsListByAuthor(String author){
+        return newsController.getNewsByAuthor(author);
     }
 }

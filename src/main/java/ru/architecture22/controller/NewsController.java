@@ -2,17 +2,33 @@ package ru.architecture22.controller;
 
 import ru.architecture22.controller.BO.*;
 import ru.architecture22.DO.NewsDO;
+import ru.architecture22.model.Factory;
+import ru.architecture22.model.FactoryProvider;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.awt.*;
+import java.util.stream.Collectors;
 
 public class NewsController implements NewsInter {
     CategoryController categoryController;
 
-    public ArrayList<NewsBO> getListNews() {
-        return null;
+    FactoryProvider factoryProvider;
+
+    public NewsController() {
+        factoryProvider = Factory.getProvider(Factory.POSTGRE_SQL_CLIENT);
+    }
+
+    public ArrayList<NewsDO> getListNews() {
+        return factoryProvider.getNewsList();
+    }
+
+    public List<NewsBO> getListNewsConverted() {
+        return factoryProvider.getNewsList().stream()
+                .map(this::convertNewsDOIntoNewsBO)
+                .collect(Collectors.toList());
     }
 
     public NewsBO convertNewsDOIntoNewsBO(NewsDO newsDO) {
@@ -26,6 +42,24 @@ public class NewsController implements NewsInter {
         CategoryBO categBO = new CategoryBO();
         newsBO.setNameCategory(categoryController.findCategoryNameById(newsDO.getIdCategory()));
         return newsBO;
+    }
+
+    public List<String> getNewsTitleList() {
+        return getListNewsConverted().stream()
+                .map(NewsBO::getTitle)
+                .collect(Collectors.toList());
+    }
+
+    public List<NewsBO> getNewsByCategory(String nameCategory) {
+        return getListNewsConverted().stream()
+                .filter(news -> Objects.equals(news.getNameCategory(), nameCategory))
+                .collect(Collectors.toList());
+    }
+
+    public List<NewsBO> getNewsByAuthor(String author) {
+        return getListNewsConverted().stream()
+                .filter(news -> Objects.equals(news.getAuthor(), author))
+                .collect(Collectors.toList());
     }
 
     public UUID addNews(UUID id, String title, StringBuilder text, String nameCateg, Image image) {

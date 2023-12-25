@@ -9,6 +9,9 @@ public abstract class FactoryProvider implements ProviderInter {
     private static ArrayList<CategoryDO> listCategoriesDO;
 
     @Override
+    public abstract void make() throws Exception;
+
+    @Override
     public ArrayList<NewsDO> getNewsList() {
         return listNewsDO;
     }
