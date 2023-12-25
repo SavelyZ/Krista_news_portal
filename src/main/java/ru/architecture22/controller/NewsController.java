@@ -3,10 +3,12 @@ package ru.architecture22.controller;
 import ru.architecture22.controller.BO.*;
 import ru.architecture22.DO.NewsDO;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.awt.*;
+import java.util.stream.Collectors;
 
 public class NewsController implements NewsInter {
     CategoryController categoryController;
@@ -26,6 +28,24 @@ public class NewsController implements NewsInter {
         CategoryBO categBO = new CategoryBO();
         newsBO.setNameCategory(categoryController.findCategoryNameById(newsDO.getIdCategory()));
         return newsBO;
+    }
+
+    public List<String> getNewsTitleList() {
+        return getListNews().stream()
+                .map(NewsBO::getTitle)
+                .collect(Collectors.toList());
+    }
+
+    public List<NewsBO> getNewsByCategory(String nameCategory) {
+        return getListNews().stream()
+                .filter(news -> Objects.equals(news.getNameCategory(), nameCategory))
+                .collect(Collectors.toList());
+    }
+
+    public List<NewsBO> getNewsByAuthor(String author) {
+        return getListNews().stream()
+                .filter(news -> Objects.equals(news.getAuthor(), author))
+                .collect(Collectors.toList());
     }
 
     public UUID addNews(UUID id, String title, StringBuilder text, String nameCateg, Image image) {
