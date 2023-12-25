@@ -3,12 +3,12 @@ package ru.architecture22.controller;
 import ru.architecture22.IO.*;
 import ru.architecture22.controller.BO.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.awt.*;
 
 public class Facade {
     NewsController newsController;
@@ -20,7 +20,7 @@ public class Facade {
     }
 
     public List<NewsBO> getListNews() {
-        return newsController.getListNews();
+        return newsController.getListNewsConverted();
     }
 
     public List<NewsBO> getNewsByCategory(String nameCategory) {
@@ -48,7 +48,7 @@ public class Facade {
     }
 
     public List<CategoryBO> getListCategory() {
-        return categoryController.getListCategory();
+        return categoryController.getListCategoryConverted();
     }
 
     public void addCategory(UUID id, String name) {

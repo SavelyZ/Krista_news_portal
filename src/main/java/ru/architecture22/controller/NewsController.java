@@ -2,6 +2,8 @@ package ru.architecture22.controller;
 
 import ru.architecture22.controller.BO.*;
 import ru.architecture22.DO.NewsDO;
+import ru.architecture22.model.Factory;
+import ru.architecture22.model.FactoryProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,20 @@ import java.util.stream.Collectors;
 public class NewsController implements NewsInter {
     CategoryController categoryController;
 
-    public ArrayList<NewsBO> getListNews() {
-        return null;
+    FactoryProvider factoryProvider;
+
+    public NewsController() {
+        factoryProvider = Factory.getProvider(Factory.POSTGRE_SQL_CLIENT);
+    }
+
+    public ArrayList<NewsDO> getListNews() {
+        return factoryProvider.getNewsList();
+    }
+
+    public List<NewsBO> getListNewsConverted() {
+        return factoryProvider.getNewsList().stream()
+                .map(this::convertNewsDOIntoNewsBO)
+                .collect(Collectors.toList());
     }
 
     public NewsBO convertNewsDOIntoNewsBO(NewsDO newsDO) {
@@ -31,19 +45,19 @@ public class NewsController implements NewsInter {
     }
 
     public List<String> getNewsTitleList() {
-        return getListNews().stream()
+        return getListNewsConverted().stream()
                 .map(NewsBO::getTitle)
                 .collect(Collectors.toList());
     }
 
     public List<NewsBO> getNewsByCategory(String nameCategory) {
-        return getListNews().stream()
+        return getListNewsConverted().stream()
                 .filter(news -> Objects.equals(news.getNameCategory(), nameCategory))
                 .collect(Collectors.toList());
     }
 
     public List<NewsBO> getNewsByAuthor(String author) {
-        return getListNews().stream()
+        return getListNewsConverted().stream()
                 .filter(news -> Objects.equals(news.getAuthor(), author))
                 .collect(Collectors.toList());
     }
